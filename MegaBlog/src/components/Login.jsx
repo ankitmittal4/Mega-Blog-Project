@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import { login as authLogin } from "../store/authSlice";
 import { Button, Input, Logo } from "./index";
+import { useDispatch } from "react-redux";
 import authService from "../appwrite/auth";
 import { useForm } from "react-hook-form";
 
@@ -18,15 +18,14 @@ function Login() {
       const session = await authService.login(data);
       if (session) {
         const userData = await authService.getCurrentUser();
-        if (userData) {
-          dispatch(authLogin(userData));
-          navigate("/");
-        }
+        if (userData) dispatch(authLogin(userData));
+        navigate("/");
       }
     } catch (error) {
       setError(error.message);
     }
   };
+
   return (
     <div className="flex items-center justify-center w-full">
       <div
@@ -52,32 +51,32 @@ function Login() {
         {error && <p className="text-red-600 mt-8 text-center">{error}</p>}
         <form onSubmit={handleSubmit(login)} className="mt-8">
           <div className="space-y-5">
-            <input
-              type="email"
+            <Input
               label="Email: "
               placeholder="Enter your email"
+              type="email"
               {...register("email", {
                 required: true,
-                matchPattern: (value) =>
-                  /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value) ||
-                  "Email address must be a valid address",
+                validate: {
+                  matchPatern: (value) =>
+                    /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value) ||
+                    "Email address must be a valid address",
+                },
               })}
             />
-            <input
-              type="password"
+            <Input
               label="Password: "
+              type="password"
               placeholder="Enter your password"
               {...register("password", {
                 required: true,
               })}
             />
-            <button type="submit" className="w-full">
+            <Button type="submit" className="w-full">
               Sign in
-            </button>
+            </Button>
           </div>
         </form>
-        <div className="mb-2 flex justify-center"></div>
-        <h2>Sign in to your Account</h2>
       </div>
     </div>
   );

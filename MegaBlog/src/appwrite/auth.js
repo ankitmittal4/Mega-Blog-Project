@@ -1,5 +1,4 @@
-import conf from "../conf/conf";
-
+import conf from "../conf/conf.js";
 import { Client, Account, ID } from "appwrite";
 
 export class AuthService {
@@ -10,11 +9,9 @@ export class AuthService {
     this.client
       .setEndpoint(conf.appwriteUrl)
       .setProject(conf.appwriteProjectId);
-
     this.account = new Account(this.client);
   }
 
-  //sign up
   async createAccount({ email, password, name }) {
     try {
       const userAccount = await this.account.create(
@@ -23,26 +20,22 @@ export class AuthService {
         password,
         name
       );
-
       if (userAccount) {
-        //if account created then login directly
+        // call another method
         return this.login({ email, password });
       } else {
         return userAccount;
       }
     } catch (error) {
-      //   throw error;
-      console.log("Error in createAccount :: ", error);
+      console.log("Error in create account :", error);
     }
   }
 
-  //login/sign in
   async login({ email, password }) {
     try {
       return await this.account.createEmailSession(email, password);
     } catch (error) {
-      //   throw error;
-      console.log("Error in login :: ", error);
+      console.log("Error in login", error);
     }
   }
 
@@ -50,20 +43,21 @@ export class AuthService {
     try {
       return await this.account.get();
     } catch (error) {
-      console.log("Error in getCurrentUser :: ", error);
+      console.log("Appwrite serive :: getCurrentUser :: error", error);
     }
+
     return null;
   }
 
-  //log out
   async logout() {
     try {
       await this.account.deleteSessions();
     } catch (error) {
-      console.log("Error in logout :: ", error);
+      console.log("Appwrite serive :: logout :: error", error);
     }
   }
 }
 
 const authService = new AuthService();
+
 export default authService;
